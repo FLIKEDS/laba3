@@ -1,34 +1,24 @@
 package battle;
 
 import droid.BaseDroid;
+
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class TeamBattle {
-    private final BaseDroid firstDroid;
-
-    private final BaseDroid secondDroid;
-
-    private final BaseDroid thirdDroid;
-
-    private int currentRound = 0;
-    private final BaseDroid fourthDroid;
-
+    private final BaseDroid[] teamOne = new BaseDroid[2];
+    private final BaseDroid[] teamTwo = new BaseDroid[2];
     private BaseDroid[] attacker = new BaseDroid[2];
-
-    private BaseDroid attackerTwo;
     private BaseDroid[] defender = new BaseDroid[2];
-    private BaseDroid defenderTwo;
     private int attackScoreOne = 0;
     private int attackScoreTwo = 0;
-
     public TeamBattle(BaseDroid firstDroid, BaseDroid secondDroid, BaseDroid thirdDroid, BaseDroid fourthDroid) {
-        this.firstDroid = firstDroid;
-        this.secondDroid = secondDroid;
-        this.thirdDroid = thirdDroid;
-        this.fourthDroid = fourthDroid;
+        this.teamOne[0] = firstDroid;
+        this.teamOne[1] = secondDroid;
+        this.teamTwo[0] = thirdDroid;
+        this.teamTwo[1] = fourthDroid;
     }
-
     public BaseDroid startTeamFight () throws InterruptedException{
         do{
             initFightOne();
@@ -45,94 +35,47 @@ public class TeamBattle {
 
         return defender[0];
     }
-    public boolean isAliveTeam(BaseDroid defender, BaseDroid defenderTwo){return (defender.getHealth()+defenderTwo.getHealth()) > 0;}
     public void roundInfo(int realDamage){
         System.out.println("//----------------------------------------------//");
         if (attacker[0].isAlive() & attacker[1].isAlive()) {
             System.out.println(attacker[0].getName() + " and " + attacker[1].getName() + " attacks on " + realDamage);
-            System.out.println(firstDroid.getName() + " first droid " + firstDroid.getHealth());
-            System.out.println(secondDroid.getName() + " second droid " + secondDroid.getHealth());
-            System.out.println(thirdDroid.getName() + "third droid " + thirdDroid.getHealth());
-            System.out.println(fourthDroid.getName() + "fourth droid" + fourthDroid.getHealth());
+            printer();
         } else if (attacker[0].isAlive()){
             System.out.println(attacker[0].getName() + " attacks on " + realDamage);
-            System.out.println(firstDroid.getName() + " first droid " + firstDroid.getHealth());
-            System.out.println(secondDroid.getName() + " second droid " + secondDroid.getHealth());
-            System.out.println(thirdDroid.getName() + "third droid " + thirdDroid.getHealth());
-            System.out.println(fourthDroid.getName() + "fourth droid" + fourthDroid.getHealth());
+            printer();
         } else {
             System.out.println(attacker[1].getName() + " attacks on " + realDamage);
-            System.out.println(firstDroid.getName() + " first droid " + firstDroid.getHealth());
-            System.out.println(secondDroid.getName() + " second droid " + secondDroid.getHealth());
-            System.out.println(thirdDroid.getName() + "third droid " + thirdDroid.getHealth());
-            System.out.println(fourthDroid.getName() + "fourth droid " + fourthDroid.getHealth());
+            printer();
         }
     }
-    /*public void initFight(){
-        Random random = new Random();
-        if(random.nextBoolean()){
-            attackerOne = firstDroid;
-            attackerTwo = secondDroid;
-
-            attackScoreOne++;
-            if (random.nextBoolean()) {
-                defenderOne = thirdDroid;
-            }else {
-                defenderTwo = fourthDroid;
-            }
-        } else {
-            attackerOne = thirdDroid;
-            attackerTwo = fourthDroid;
-
-            attackScoreTwo++;
-            if(random.nextBoolean()) {
-                defenderOne = firstDroid;
-            } else {
-                defenderTwo = secondDroid;
-            }
-        }
-    }*/
+    public void printer(){
+        System.out.println(teamOne[0].toString() + teamOne[1].toString() + teamTwo[0] + teamTwo[1]);
+    }
+    @Override
+    public String toString() {
+        return "TeamBattle{" +
+                "teamOne=" + Arrays.toString(teamOne) +
+                ", teamTwo=" + Arrays.toString(teamTwo) +
+                '}';
+    }
     public void initFightOne(){
         Random random = new Random();
         if(random.nextBoolean()){
-                attacker[0] = firstDroid;
-                attacker[1] = secondDroid;
+                attacker[0] = teamOne[0];
+                attacker[1] = teamOne[1];
 
-                defender[0] = thirdDroid;
-                defender[1] = fourthDroid;
+                defender[0] = teamTwo[0];
+                defender[1] = teamTwo[1];
                 attackScoreOne++;
         } else {
-            attacker[0] = thirdDroid;
-            attacker[1] = fourthDroid;
+            attacker[0] = teamTwo[0];
+            attacker[1] = teamTwo[1];
 
-            defender[0]= firstDroid;
-            defender[1] = secondDroid;
+            defender[0]= teamOne[0];
+            defender[1] = teamOne[1];
             attackScoreTwo++;
         }
     }
-    /*public int doFightTeam(){
-        int realDamage;
-        if (attackScoreOne == 2 | attackScoreTwo == 2){
-            realDamage = boostAttacks();
-        } else {
-            realDamage = Attacks();
-        }
-        return realDamage;
-    }
-    public int doFight(){
-        int realDamage;
-        if (attackScoreOne == 3){
-            realDamage = boostAttacks();
-        } else if (attackScoreTwo == 3){
-            realDamage = boostAttacks();
-        } else {
-            if(attackerOne.isAlive()){
-
-            }
-            realDamage = Attacks();
-        }
-        return realDamage;
-    }*/
     public int Attacks(){
         int realDamage = 0;
         if (attackScoreOne == 2){
@@ -174,74 +117,24 @@ public class TeamBattle {
         if (attacker[0].isAlive() & attacker[1].isAlive() & attackScore == 2){
             Damage = takeTeamBoostDamage(realDamage);
         } else if (attacker[0].isAlive() & attackScore == 2){
-            Damage = takeSoloBoostDamageOne(realDamage);
+            Damage = takeBoostDamage(realDamage, attacker[0]);
         } else if(attacker[1].isAlive() & attackScore == 2)
-            Damage = takeSoloBoostDamageTwo(realDamage);
+            Damage = takeBoostDamage(realDamage, attacker[1]);
 
         return Damage;
     }
-
-    private int takeSoloBoostDamageOne(int realDamage){
+    private int takeBoostDamage(int realDamage, BaseDroid attacker){
         if(defender[0].isAlive()){
-            realDamage = defender[0].getBoostHit(attacker[0].getBoostDamage());
+            realDamage = defender[0].getBoostHit(attacker.getBoostDamage());
         } else if (defender[1].isAlive()) {
-            realDamage = defender[0].getBoostHit(attacker[0].getBoostDamage());
-        }
-        return realDamage;
-    }
-    private int takeSoloBoostDamageTwo(int realDamage){
-        if(defender[0].isAlive()){
-            realDamage = defender[0].getBoostHit(attacker[1].getBoostDamage());
-        } else if (defender[1].isAlive()) {
-            realDamage = defender[0].getBoostHit(attacker[1].getBoostDamage());
+            realDamage = defender[0].getBoostHit(attacker.getBoostDamage());
         }
         return realDamage;
     }
     private int takeTeamBoostDamage(int realDamage) {
-        if (defender[0].isAlive()){
-            realDamage += defender[0].getBoostHit(attacker[0].getBoostDamage());
-            realDamage += defender[0].getBoostHit(attacker[1].getBoostDamage());
-        } else {
-            realDamage += defender[1].getBoostHit(attacker[0].getBoostDamage());
-            realDamage += defender[1].getBoostHit(attacker[1].getBoostDamage());
-        }
+        BaseDroid defenderD =  defender[0].isAlive()?  defender[0] :  defender[1];
+        realDamage += defenderD.getBoostHit(attacker[0].getBoostDamage());
+        realDamage += defenderD.getBoostHit(attacker[1].getBoostDamage());
         return realDamage;
     }
-
-   /* public int boostAttacks(){
-        return defender.getBoostHit(attackerOne.getDamage()+attackerTwo.getDamage());
-    }*/
-/*    public void initFight(){
-        Random random = new Random();
-        if (currentRound%2 == 0){
-            if(random.nextBoolean()){
-                attacker = firstDroid;
-                if(random.nextBoolean()){
-                  defender = thirdDroid;
-                } else {
-                    defender = fourthDroid;
-                }
-            } else {
-                attacker = secondDroid;
-            }
-        } else {
-            if(random.nextBoolean()){
-                attacker = thirdDroid;
-                if(random.nextBoolean()){
-                    defender = secondDroid;
-                } else {
-                    defender = firstDroid;
-                }
-        } else {
-                attacker = fourthDroid;
-                if(random.nextBoolean()){
-                    defender = secondDroid;
-                } else {
-                    defender = firstDroid;
-                }
-            }
-
-
-    }
-*/
 }

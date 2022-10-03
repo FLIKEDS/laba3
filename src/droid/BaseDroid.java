@@ -82,11 +82,6 @@ public class BaseDroid {
         }
         return actualDamage;
     }
-    //@Override
-    /*public String toString() {
-        return name + " health = " + health;
-    }*/
-
     @Override
     public String toString() {
         return "BaseDroid{" +
